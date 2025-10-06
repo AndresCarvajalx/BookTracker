@@ -253,6 +253,5 @@ const handleLogin = async () => {
 </script>
 
 <style scoped>
-/* Puedes dejar esta sección vacía o usarla para estilos muy específicos 
-   que no quieras manejar con clases de Tailwind. */
+
 </style>

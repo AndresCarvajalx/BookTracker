@@ -1,205 +1,105 @@
 <template>
-  <div class="home-wrapper">
-    <!-- Header -->
-    <header class="home-header">
-      <h1>Hola, {{ username }}!</h1>
-      <p>Tus libros en la biblioteca</p>
-    </header>
-
-    <!-- Estadísticas -->
-    <section class="stats-section">
-      <div class="stat-card">📖 Leídos: {{ stats.read }}</div>
-      <div class="stat-card">📚 Por leer: {{ stats.to_read }}</div>
-      <div class="stat-card">🔖 Leyendo: {{ stats.reading }}</div>
-    </section>
-
-    <!-- Agregar libro -->
-    <section class="add-book-section">
-      <h2>Agregar un nuevo libro 📚</h2>
-      <section class="add-book-button-section">
-        <button class="btn-add-book" @click="showAddBookModal = true">➕ Agregar libro</button>
-      </section>
-      <AddBook
-        v-if="showAddBookModal"
-        :user-id="userId"
-        @close="showAddBookModal = false"
-        @book-added="onBookAdded"
-      />
-    </section>
-
-    <!-- Grid de libros -->
-    <main class="books-container">
-      <div v-if="loading" class="loading">Cargando libros...</div>
-      <div v-else-if="books.length === 0" class="no-books">No tienes libros agregados.</div>
-
-      <div class="books-grid">
-        <BookCard
-          v-for="book in books"
-          :key="book.id"
-          :book="book"
-          :user-id="userId"
-          @deleted="onBookDeleted"
-          @click="openModal(book.id)"
-        />
+  <div class="flex font-figtree bg-cream text-ink min-h-screen">
+    <aside class="w-[260px] bg-sidebar p-6 flex flex-col border-r border-border-color flex-shrink-0">
+      <div class="flex items-center gap-3 text-2xl font-bold pb-6">
+        <i class="fas fa-book-open"></i>
+        <h2>BookTracker</h2>
       </div>
-    </main>
+      
+      <div class="pb-6 mb-6 border-b border-border-color">
+        <button @click="showAddBookModal = true" class="w-full flex items-center justify-center gap-2 bg-terracotta text-white p-3 rounded-lg text-sm font-medium cursor-pointer transition-colors duration-200 hover:bg-terracotta-hover">
+          <i class="fas fa-plus"></i>
+          <span>Añadir Nuevo Libro</span>
+        </button>
+      </div>
 
-    <!-- Modal de libro -->
-    <BookModal
-      v-if="showModal"
-      :book-id="selectedBookId"
-      :user-id="userId"
-      :visible="showModal"
-      @close="showModal = false"
-      @updated="onBookUpdated"
-    />
+      <nav class="flex-grow">
+        <p class="text-xs font-medium text-muted-ink uppercase mb-4 px-2">Categorías</p>
+        <ul>
+          <li @click="filterStatus = 'all'" :class="filterStatus === 'all' ? activeNavItemClass : navItemClass">
+            <i class="w-[30px] text-center fas fa-layer-group"></i>
+            <span>Todos</span>
+            <span :class="filterStatus === 'all' ? activeBookCountClass : bookCountClass">{{ books.length }}</span>
+          </li>
+          <li @click="filterStatus = 'reading'" :class="filterStatus === 'reading' ? activeNavItemClass : navItemClass">
+            <i class="w-[30px] text-center fas fa-bookmark"></i>
+            <span>Leyendo</span>
+            <span :class="filterStatus === 'reading' ? activeBookCountClass : bookCountClass">{{ stats.reading }}</span>
+          </li>
+          <li @click="filterStatus = 'to_read'" :class="filterStatus === 'to_read' ? activeNavItemClass : navItemClass">
+            <i class="w-[30px] text-center fas fa-book"></i>
+            <span>Por Leer</span>
+            <span :class="filterStatus === 'to_read' ? activeBookCountClass : bookCountClass">{{ stats.to_read }}</span>
+          </li>
+          <li @click="filterStatus = 'read'" :class="filterStatus === 'read' ? activeNavItemClass : navItemClass">
+            <i class="w-[30px] text-center fas fa-check-circle"></i>
+            <span>Leídos</span>
+            <span :class="filterStatus === 'read' ? activeBookCountClass : bookCountClass">{{ stats.read }}</span>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="flex justify-between items-center pt-4 border-t border-border-color text-sm text-muted-ink">
+        <span>Hola, {{ username }}</span>
+        <button @click="logout" title="Cerrar Sesión" class="bg-transparent border-none text-muted-ink text-xl cursor-pointer p-1 rounded hover:text-ink hover:bg-black/5">
+          <i class="fas fa-sign-out-alt"></i>
+        </button>
+      </div>
+    </aside>
+
+    <div class="flex-grow p-10 xl:p-16 overflow-y-auto">
+      <header class="flex justify-between items-center mb-10">
+        <h1 class="text-4xl font-bold">{{ currentCategoryTitle }}</h1>
+      </header>
+
+      <main>
+        <div v-if="loading" class="text-lg text-muted-ink text-center py-16">Cargando tus libros...</div>
+        <div v-else-if="filteredBooks.length === 0" class="text-lg text-muted-ink text-center py-16">No tienes libros en esta categoría.</div>
+        
+        <div v-else class="books-grid">
+          <BookCard
+            v-for="book in filteredBooks"
+            :key="book.id"
+            :book="book"
+            :user-id="userId"
+            @deleted="onBookDeleted"
+            @click="openModal(book.id)"
+          />
+        </div>
+      </main>
+    </div>
+
+    <AddBook v-if="showAddBookModal" :user-id="userId" @close="showAddBookModal = false" @book-added="onBookAdded" />
+    <BookModal v-if="showModal" :book-id="selectedBookId" :user-id="userId" :visible="showModal" @close="showModal = false" @updated="onBookUpdated" />
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
-import BookCard from '../components/BookCard.vue'
-import BookModal from '../components/BookModal.vue'
-import AddBook from '../components/AddBook.vue'
 
-const books = ref([])
-const loading = ref(true)
-const username = ref(localStorage.getItem('username') || '')
-const userId = Number(localStorage.getItem('userId'))
+import BookCard from '../components/BookCard.vue';
+import BookModal from '../components/BookModal.vue';
+import AddBook from '../components/AddBook.vue';
 
-const selectedBookId = ref(null)
-const showModal = ref(false)
-const showAddBookModal = ref(false)
 
-// Cargar libros desde la API
-const loadBooks = async () => {
-  if (!userId) return
-  loading.value = true
-  try {
-    const res = await fetch(`http://localhost:8000/users/${userId}/books/`)
-    if (!res.ok) throw new Error('Error al obtener los libros')
-    books.value = await res.json()
-  } catch (err) {
-    console.error(err)
-    alert('No se pudieron cargar los libros.')
-  } finally {
-    loading.value = false
-  }
-}
+import { useHomeViewLogic } from '../components/useHomeViewLogic.js';
 
-onMounted(loadBooks)
 
-// Abrir modal de libro
-const openModal = (bookId) => {
-  selectedBookId.value = bookId
-  showModal.value = true
-}
-
-// Eliminar libro
-const onBookDeleted = (bookId) => {
-  books.value = books.value.filter(b => b.id !== bookId)
-}
-
-// Refrescar lista cuando se agrega un libro
-const onBookAdded = () => {
-  loadBooks()
-}
-
-// Actualizar libro desde el modal
-const onBookUpdated = () => {
-  loadBooks()
-}
-
-// Estadísticas por estado
-const stats = computed(() => {
-  return {
-    read: books.value.filter(b => b.status === 'read').length,
-    to_read: books.value.filter(b => b.status === 'to_read').length,
-    reading: books.value.filter(b => b.status === 'reading').length
-  }
-})
+const {
+  navItemClass, activeNavItemClass, bookCountClass, activeBookCountClass,
+  books, loading, username, userId, selectedBookId, showModal, showAddBookModal,
+  filterStatus, filteredBooks, currentCategoryTitle, stats,
+  logout, openModal, onBookDeleted, onBookAdded, onBookUpdated
+} = useHomeViewLogic();
 </script>
 
 <style scoped>
-.home-wrapper {
-  padding: 2rem;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
-  min-height: 100vh;
-}
 
-.home-header {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-.home-header h1 {
-  color: #1e3a8a;
-  margin-bottom: 0.5rem;
-}
-
-.home-header p {
-  color: #555;
-}
-
-.stats-section {
-  display: flex;
-  justify-content: center;
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-  flex-wrap: wrap;
-}
-
-.stat-card {
-  background: #ffffff;
-  padding: 1rem 2rem;
-  border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  font-weight: bold;
-  font-size: 1rem;
-  color: #1e3a8a;
-}
-
-.add-book-section {
-  max-width: 500px;
-  margin: 0 auto 2rem;
-  text-align: center;
-}
-
-.books-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
+@import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;700&display=swap');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');
 
 .books-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  grid-auto-rows: 1fr;
-  gap: 1.5rem;
-  width: 100%;
-  max-width: 1200px;
-}
-
-.loading,
-.no-books {
-  font-size: 1.2rem;
-  color: #555;
-  margin-top: 2rem;
-}
-
-.btn-add-book {
-  background: #1e3a8a;
-  color: white;
-  padding: 0.5rem 1.2rem;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.btn-add-book:hover {
-  background-color: #162f6b;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 2rem;
 }
 </style>
