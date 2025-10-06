@@ -14,6 +14,8 @@ func main() {
 
 	config.Connect()
 
+	router.Static("/uploads", "./uploads")
+
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost" + clientPort},
 		AllowMethods:     []string{"POST", "GET", "PUT", "DELETE"},

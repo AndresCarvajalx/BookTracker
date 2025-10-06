@@ -11,6 +11,7 @@ type Book struct {
 	Author      string    `json:"author"`
 	Genre       *string   `json:"genre"`
 	CoverImage  *string   `json:"cover_image"`
+	PDFPath     *string   `json:"pdf_path"`
 	TotalPages  *int      `json:"total_pages"`
 	CurrentPage *int      `json:"current_page"`
 	Rating      *float64  `json:"rating"`
