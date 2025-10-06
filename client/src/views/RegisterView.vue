@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <div class="register-wrapper">
     <div class="register-box">
       <h1>Regístrate para acceder a tu biblioteca personal</h1>
@@ -165,4 +165,125 @@ const handleRegister = async () => {
 .login-text a:hover {
   text-decoration: underline;
 }
+</style>
+ -->
+
+ <template>
+  <div class="flex items-center justify-center min-h-screen bg-gradient-to-br from-stone-700 to-stone-900">
+    <div class="w-full max-w-md mx-auto">
+      <div class="p-8 bg-white rounded-2xl shadow-xl">
+        <h3 class="text-3xl font-bold text-center text-stone-800">
+          Crear cuenta
+        </h3>
+        <p class="text-center text-gray-500 mb-6">Únete a BookTracker y gestiona tus lecturas</p>
+        
+        <form @submit.prevent="handleRegister">
+          <div class="mb-4">
+            <label class="block mb-2 text-sm font-medium text-gray-700">Nombre de usuario</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <i class="fas fa-user text-gray-400"></i>
+              </div>
+              <input
+                v-model="form.username"
+                type="text"
+                class="block w-full p-3 pl-10 border border-gray-300 rounded-lg focus:ring-stone-500 focus:border-stone-500"
+                placeholder="Juan Pérez"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="block mb-2 text-sm font-medium text-gray-700">Correo electrónico</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <i class="fas fa-envelope text-gray-400"></i>
+              </div>
+              <input
+                v-model="form.email"
+                type="email"
+                class="block w-full p-3 pl-10 border border-gray-300 rounded-lg focus:ring-stone-500 focus:border-stone-500"
+                placeholder="correo@ejemplo.com"
+                required
+              />
+            </div>
+          </div>
+          
+          <div class="mb-6">
+            <label class="block mb-2 text-sm font-medium text-gray-700">Contraseña</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <i class="fas fa-lock text-gray-400"></i>
+              </div>
+              <input
+                v-model="form.password"
+                type="password"
+                class="block w-full p-3 pl-10 border border-gray-300 rounded-lg focus:ring-stone-500 focus:border-stone-500"
+                placeholder="********"
+                required
+              />
+            </div>
+          </div>
+          
+          <div class="grid">
+            <button
+              type="submit"
+              class="w-full p-3 text-white bg-stone-700 rounded-lg font-semibold hover:bg-stone-800 transition-colors duration-300"
+            >
+              Registrarse
+            </button>
+          </div>
+        </form>
+        
+        <div class="mt-4 text-center">
+          <router-link to="/login" class="text-sm font-medium text-stone-600 hover:underline">
+            ¿Ya tienes cuenta? Inicia sesión
+          </router-link>
+        </div>
+      </div>
+      <p class="mt-4 text-xs text-center text-gray-400">© BookTracker</p>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+// --- LA LÓGICA NO HA CAMBIADO ---
+const form = ref({
+  username: '',
+  email: '',
+  password: ''
+})
+
+const router = useRouter()
+
+const handleRegister = async () => {
+  try {
+    const res = await fetch('http://localhost:8000/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(form.value),
+    })
+
+    if (!res.ok) {
+      const errorText = await res.text()
+      throw new Error(errorText)
+    }
+
+    const data = await res.json()
+    console.log('Registro exitoso:', data)
+
+    router.push('/login')
+  } catch (err) {
+    alert('Error al registrar: ' + err.message)
+    console.error(err)
+  }
+}
+</script>
+
+<style scoped>
+/* Con Tailwind, esta sección se mantiene limpia a menos que necesites estilos muy específicos. */
 </style>

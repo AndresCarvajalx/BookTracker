@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>BookTracker — Dashboard</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://kit.fontawesome.com/a2d9b5f9d1.js" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="bg-soft">
+<nav class="navbar navbar-expand-lg navbar-dark nav-brown shadow-sm">
+  <div class="container-fluid">
+    <a class="navbar-brand d-flex align-items-center" href="#"><i class="fas fa-book fa-lg me-2"></i><span>BookTracker</span></a>
+    <div class="d-flex ms-auto align-items-center">
+      <input id="searchInput" class="form-control form-control-sm me-2" style="min-width:200px" placeholder="Buscar por título, autor o género...">
+      <button id="favFilterBtn" class="btn btn-outline-brown me-2" title="Mostrar favoritos"><i class="fas fa-heart"></i></button>
+      <button id="addBtn" class="btn btn-brown me-2" data-bs-toggle="modal" data-bs-target="#addBookModal"><i class="fas fa-plus me-2"></i>Agregar</button>
+      <button id="profileBtn" class="btn btn-outline-light"><i class="fas fa-user-circle"></i></button>
+    </div>
+  </div>
+</nav>
+<div class="container my-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="mb-0">Mi Biblioteca</h2>
+      <small class="text-muted">Organiza, busca y revisa tus lecturas</small>
+    </div>
+    <div class="d-flex gap-2">
+      <select id="filterStatus" class="form-select form-select-sm" style="width:160px">
+        <option value="all">Todos</option>
+        <option value="to-read">Por leer</option>
+        <option value="reading">En lectura</option>
+        <option value="finished">Finalizado</option>
+      </select>
+      <button id="exportCsv" class="btn btn-outline-brown">Exportar CSV</button>
+    </div>
+  </div>
+  <div id="booksGrid" class="row g-4"></div>
+</div>
+
+<!-- Modal: Agregar/Editar libro -->
+<div class="modal fade" id="addBookModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-brown text-white">
+        <h5 class="modal-title">Agregar / Editar libro</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="bookForm">
+          <input type="hidden" id="bookId">
+          <div class="row g-3">
+            <div class="col-md-6"><label class="form-label">Título</label><input id="bookTitle" class="form-control" required></div>
+            <div class="col-md-6"><label class="form-label">Autor</label><input id="bookAuthor" class="form-control"></div>
+            <div class="col-md-4"><label class="form-label">Fecha publicación</label><input type="date" id="bookDate" class="form-control"></div>
+            <div class="col-md-4"><label class="form-label">Género</label><input id="bookGenre" class="form-control"></div>
+            <div class="col-md-4"><label class="form-label">Progreso (%)</label><input type="number" min="0" max="100" id="bookProgress" class="form-control" value="0"></div>
+            <div class="col-12"><label class="form-label">Sinopsis</label><textarea id="bookSynopsis" class="form-control" rows="3"></textarea></div>
+            <div class="col-12">
+              <div class="d-flex gap-2">
+                <input id="bookCover" class="form-control" placeholder="URL portada (opcional)">
+                <button id="fetchGoogle" type="button" class="btn btn-outline-brown"><i class="fas fa-magic me-1"></i>Buscar</button>
+              </div>
+              <small class="text-brown-muted">Puedes usar la búsqueda automática para obtener datos desde Google Books.</small>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button id="saveBookBtn" class="btn btn-brown">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toasts -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index:1100">
+  <div id="liveToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body" id="toastBody">Operación exitosa</div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/main.js"></script>
+</body>
+</html>

@@ -3,7 +3,7 @@ import { createPinia } from 'pinia'
 
 import App from './App.vue'
 import router from './router'
-
+import './styles.css'; // <-- Ruta correcta al archivo en la carpeta src
 const app = createApp(App)
 
 app.use(createPinia())

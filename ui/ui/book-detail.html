@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>BookTracker — Detalle del libro</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://kit.fontawesome.com/a2d9b5f9d1.js" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="bg-soft">
+<nav class="navbar navbar-expand-lg navbar-dark nav-brown shadow-sm">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="dashboard.html"><i class="fas fa-book me-2"></i>BookTracker</a>
+  </div>
+</nav>
+<div class="container my-5">
+  <div class="row">
+    <div class="col-lg-4">
+      <div class="card shadow-sm border-0">
+        <div class="card-body text-center">
+          <img id="detailCover" src="" alt="cover" class="img-fluid mb-3" style="max-height:260px">
+          <h4 id="detailTitle">Título</h4>
+          <p class="text-muted" id="detailAuthor">Autor — 2025</p>
+          <div class="progress mb-2" style="height:10px;">
+            <div id="detailProgress" class="progress-bar" role="progressbar" style="width: 0%"></div>
+          </div>
+          <a href="dashboard.html" class="btn btn-outline-secondary btn-sm">Volver</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-8">
+      <div class="card shadow-sm border-0 p-3">
+        <h5>Sinopsis</h5>
+        <p id="detailSynopsis" class="text-muted"></p>
+        <h6 class="mt-4">Detalles</h6>
+        <ul class="list-unstyled text-muted">
+          <li><strong>Género:</strong> <span id="detailGenre"></span></li>
+          <li><strong>Fecha publicación:</strong> <span id="detailDate"></span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="assets/js/main.js"></script>
+</body>
+</html>

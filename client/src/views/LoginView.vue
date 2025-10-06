@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <div class="login-wrapper">
     <div class="login-box">
       <h1>Bienvenido a tu Biblioteca</h1>
@@ -147,4 +147,112 @@ const handleLogin = async () => {
 .register-text a:hover {
   text-decoration: underline;
 }
+</style> -->
+
+
+<template>
+  <div class="flex items-center justify-center min-h-screen bg-gradient-to-br from-stone-700 to-stone-900">
+    <div class="w-full max-w-md mx-auto">
+      <div class="p-8 bg-white rounded-2xl shadow-xl">
+        <h3 class="text-3xl font-bold text-center text-stone-800">
+          BookTracker
+        </h3>
+        <p class="text-center text-gray-500 mb-6">Administra tu colección con elegancia</p>
+        
+        <form @submit.prevent="handleLogin">
+          <div class="mb-4">
+            <label class="block mb-2 text-sm font-medium text-gray-700">Correo</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <i class="fas fa-envelope text-gray-400"></i>
+              </div>
+              <input
+                v-model="form.email"
+                type="email"
+                class="block w-full p-3 pl-10 border border-gray-300 rounded-lg focus:ring-stone-500 focus:border-stone-500"
+                placeholder="tu@correo.com"
+                required
+              />
+            </div>
+          </div>
+          
+          <div class="mb-6">
+            <label class="block mb-2 text-sm font-medium text-gray-700">Contraseña</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <i class="fas fa-lock text-gray-400"></i>
+              </div>
+              <input
+                v-model="form.password"
+                type="password"
+                class="block w-full p-3 pl-10 border border-gray-300 rounded-lg focus:ring-stone-500 focus:border-stone-500"
+                placeholder="********"
+                required
+              />
+            </div>
+          </div>
+          
+          <div class="grid">
+            <button
+              type="submit"
+              class="w-full p-3 text-white bg-stone-700 rounded-lg font-semibold hover:bg-stone-800 transition-colors duration-300"
+            >
+              Iniciar sesión
+            </button>
+          </div>
+        </form>
+        
+        <div class="mt-4 text-center">
+          <router-link to="/register" class="text-sm font-medium text-stone-600 hover:underline">
+            Crear cuenta
+          </router-link>
+        </div>
+      </div>
+      <p class="mt-4 text-xs text-center text-gray-400">© BookTracker</p>
+    </div>
+  </div>
+</template>
+
+<script setup>
+// --- LA LÓGICA NO HA CAMBIADO ---
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+const form = ref({
+  email: '',
+  password: ''
+})
+
+const router = useRouter()
+
+const handleLogin = async () => {
+  try {
+    const res = await fetch('http://localhost:8000/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(form.value),
+    })
+
+    if (!res.ok) {
+      const errorText = await res.text()
+      throw new Error(errorText)
+    }
+
+    const data = await res.json()
+    console.log('Login exitoso:', data)
+
+    localStorage.setItem('userId', data.user.id)
+    localStorage.setItem('username', data.user.username)
+
+    router.push('/')
+  } catch (err) {
+    alert('Credenciales inválidas o error del servidor: ' + err.message)
+    console.error(err)
+  }
+}
+</script>
+
+<style scoped>
+/* Puedes dejar esta sección vacía o usarla para estilos muy específicos 
+   que no quieras manejar con clases de Tailwind. */
 </style>
