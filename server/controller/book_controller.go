@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"encoding/base64"
 	"net/http"
 	"os"
 	"strconv"
@@ -220,29 +219,35 @@ func GetBookFile(c *gin.Context) {
 	userId := c.Param("user_id")
 
 	book, err := services.GetBook(userId, bookId)
+
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	if book.PDFPath == nil || *book.PDFPath == "" {
-		c.JSON(http.StatusNotFound, gin.H{"error": "No PDF available"})
+	if book.PDFPath == nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "no pdf found for this book"})
 		return
 	}
 
-	data, err := os.ReadFile(*book.PDFPath)
+	c.File(*book.PDFPath)
+}
+
+func GetBookCover(c *gin.Context) {
+	bookId := c.Param("book_id")
+	userId := c.Param("user_id")
+
+	book, err := services.GetBook(userId, bookId)
+
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	base64Data := base64.StdEncoding.EncodeToString(data)
-	c.JSON(http.StatusOK, gin.H{
-		"id":          book.ID,
-		"title":       book.Title,
-		"pdf_base64":  base64Data,
-		"cover_image": book.CoverPath,
-		"author":      book.Author,
-		"status":      book.Status,
-	})
+	if book.CoverPath == nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "no cover found for this book"})
+		return
+	}
+
+	c.File(*book.CoverPath)
 }

@@ -14,6 +14,7 @@ func BookRoutes(r *gin.Engine) {
 		books.DELETE("/:book_id", controller.DeleteBook)
 		books.PUT("/:book_id", controller.UpdateBook)
 		books.GET("/:book_id/pdf", controller.GetBookFile)
+		books.GET("/:book_id/cover", controller.GetBookCover)
 		books.PUT("/:book_id/pdf", controller.UpdateBookFile)
 		books.PUT("/:book_id/cover", controller.UpdateBookCover)
 	}
