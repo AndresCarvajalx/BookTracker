@@ -18,7 +18,14 @@ var CoverFolder string = "uploads/covers/"
 func UpdateBookCover(c *gin.Context) {
 	cover, errCover := c.FormFile("cover")
 	bookId := c.Param("book_id")
-	userId := c.Param("user_id")
+
+	user, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "user not found in context"})
+		return
+	}
+
+	userId := strconv.Itoa(int(user.(uint)))
 
 	if errCover != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": errCover.Error()})
@@ -57,7 +64,14 @@ func UpdateBookCover(c *gin.Context) {
 func UpdateBookFile(c *gin.Context) {
 	pdf, errPDF := c.FormFile("pdf")
 	bookId := c.Param("book_id")
-	userId := c.Param("user_id")
+
+	user, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "user not found in context"})
+		return
+	}
+
+	userId := strconv.Itoa(int(user.(uint)))
 
 	if errPDF != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": errPDF.Error()})
@@ -94,7 +108,13 @@ func UpdateBookFile(c *gin.Context) {
 }
 
 func GetBooks(c *gin.Context) {
-	userId := c.Param("user_id")
+	user, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "user not found in context"})
+		return
+	}
+
+	userId := strconv.Itoa(int(user.(uint)))
 
 	if len(userId) == 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "user_id header is required"})
@@ -117,7 +137,15 @@ func GetBooks(c *gin.Context) {
 }
 
 func GetBookByID(c *gin.Context) {
-	userId, bookId := c.Param("user_id"), c.Param("book_id")
+	bookId := c.Param("book_id")
+
+	user, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "user not found in context"})
+		return
+	}
+
+	userId := strconv.Itoa(int(user.(uint)))
 
 	book, err := services.GetBook(userId, bookId)
 	if err != nil {
@@ -131,7 +159,13 @@ func GetBookByID(c *gin.Context) {
 func AddBook(c *gin.Context) {
 	var book models.Book
 
-	userId := c.Param("user_id") // TODO authentication with JWT
+	user, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "user not found in context"})
+		return
+	}
+
+	userId := strconv.Itoa(int(user.(uint)))
 
 	id, err := strconv.Atoi(userId)
 
@@ -161,7 +195,15 @@ func AddBook(c *gin.Context) {
 }
 
 func DeleteBook(c *gin.Context) {
-	userId, bookId := c.Param("user_id"), c.Param("book_id")
+	bookId := c.Param("book_id")
+
+	user, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "user not found in context"})
+		return
+	}
+
+	userId := strconv.Itoa(int(user.(uint)))
 
 	if _, err := strconv.Atoi(userId); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid user_id"})
@@ -197,8 +239,15 @@ func DeleteBook(c *gin.Context) {
 }
 
 func UpdateBook(c *gin.Context) {
-	userId := c.Param("user_id")
 	bookId := c.Param("book_id")
+
+	user, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "user not found in context"})
+		return
+	}
+
+	userId := strconv.Itoa(int(user.(uint)))
 
 	var book models.Book
 	if err := c.ShouldBindJSON(&book); err != nil {
@@ -216,7 +265,14 @@ func UpdateBook(c *gin.Context) {
 
 func GetBookFile(c *gin.Context) {
 	bookId := c.Param("book_id")
-	userId := c.Param("user_id")
+
+	user, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "user not found in context"})
+		return
+	}
+
+	userId := strconv.Itoa(int(user.(uint)))
 
 	book, err := services.GetBook(userId, bookId)
 
@@ -235,7 +291,14 @@ func GetBookFile(c *gin.Context) {
 
 func GetBookCover(c *gin.Context) {
 	bookId := c.Param("book_id")
-	userId := c.Param("user_id")
+
+	user, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "user not found in context"})
+		return
+	}
+
+	userId := strconv.Itoa(int(user.(uint)))
 
 	book, err := services.GetBook(userId, bookId)
 

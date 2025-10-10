@@ -2,11 +2,13 @@ package routes
 
 import (
 	"github.com/AndresCarvajalx/BookTracker/controller"
+	"github.com/AndresCarvajalx/BookTracker/middleware"
 	"github.com/gin-gonic/gin"
 )
 
 func BookRoutes(r *gin.Engine) {
-	books := r.Group("/users/:user_id/books")
+	books := r.Group("/books")
+	books.Use(middleware.AuthMiddleware())
 	{
 		books.GET("/", controller.GetBooks)
 		books.GET("/:book_id", controller.GetBookByID)
