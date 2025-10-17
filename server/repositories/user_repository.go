@@ -10,3 +10,9 @@ func FindUserByID(id string) (models.User, error) {
 	result := config.DB.Where("id = ?", id).First(&users)
 	return users, result.Error
 }
+
+func UpdateUser(id string, userData *models.User) (models.User, error) {
+	var user models.User
+	result := config.DB.Model(&user).Where("id = ?", id).Updates(userData)
+	return user, result.Error
+}
