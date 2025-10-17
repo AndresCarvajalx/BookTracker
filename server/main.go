@@ -24,6 +24,7 @@ func main() {
 		AllowCredentials: true,
 	}))
 
+	routes.UserRoutes(router)
 	routes.BookRoutes(router)
 	routes.AuthRoutes(router)
 
