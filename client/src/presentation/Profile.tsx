@@ -1,12 +1,33 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getBooks } from "../api/books";
+import { getUser } from "../api/user";
+import type { User } from "../types";
 
+// TODO : Implement profile editing functionality
 export function Profile() {
   const [isEditing, setIsEditing] = useState(false);
-  const [username, setUsername] = useState("Andres Felipe Carvajal");
+  const [user, setUser] = useState<User | null>(null);
+  const [stats, setStats] = useState({ read: 0, to_read: 0, reading: 0 });
+
+  useEffect(() => {
+    getUser()
+      .then((data) => setUser(data))
+      .catch((err) => console.error("Error fetching user:", err));
+
+    getBooks()
+      .then((books) => {
+        const newStats = {
+          read: books.filter((b) => b.status === "read").length,
+          to_read: books.filter((b) => b.status === "to_read").length,
+          reading: books.filter((b) => b.status === "reading").length,
+        };
+        setStats(newStats);
+      })
+      .catch((err) => console.error("Error fetching books:", err));
+  }, []);
 
   const handleEditClick = () => {
     if (isEditing) {
-      // Aquí puedes guardar en backend si es necesario
     }
     setIsEditing(!isEditing);
   };
@@ -20,11 +41,11 @@ export function Profile() {
           {isEditing ? (
             <input
               className="border border-(--color-border) rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-(--color-primary)"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              value={user?.username}
+              onChange={(e) => {}}
             />
           ) : (
-            <p className="text-xl font-bold">{username}</p>
+            <p className="text-xl font-bold">{user?.username}</p>
           )}
 
           <button
@@ -36,13 +57,25 @@ export function Profile() {
         </div>
 
         <p className="text-md mb-4 font-light text-(--color-text-secondary)">
-          andresfelipe@gmail.com
+          ${user?.email}
         </p>
 
         <div className="grid grid-cols-3 gap-4 mt-4 w-full">
-          <StatCard label="Leídos" count={32} color="bg-(--gold-color)" />
-          <StatCard label="Por leer" count={15} color="bg-(--gold-color)" />
-          <StatCard label="Leyendo" count={4} color="bg-(--gold-color)" />
+          <StatCard
+            label="Leídos"
+            count={stats.read}
+            color="bg-(--gold-color)"
+          />
+          <StatCard
+            label="Por leer"
+            count={stats.to_read}
+            color="bg-(--gold-color)"
+          />
+          <StatCard
+            label="Leyendo"
+            count={stats.reading}
+            color="bg-(--gold-color)"
+          />
         </div>
       </div>
     </>
