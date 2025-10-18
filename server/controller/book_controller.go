@@ -128,11 +128,6 @@ func GetBooks(c *gin.Context) {
 		return
 	}
 
-	if len(books) == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"message": "no books found for this user"})
-		return
-	}
-
 	c.JSON(http.StatusOK, books)
 }
 
