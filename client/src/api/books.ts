@@ -1,6 +1,6 @@
 // src/api/books.ts
-import axios from "./axios";
 import { Book } from "../types";
+import axios from "./axios";
 
 export const getBooks = async (): Promise<Book[]> => {
   const res = await axios.get("/books/");

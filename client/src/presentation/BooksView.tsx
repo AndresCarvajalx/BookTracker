@@ -100,18 +100,25 @@ export function BooksView({ filter = Status.READ }: BookViewProp) {
   }, []);
 
   async function fetchCoverForBook(bookId: number) {
-    const coverBlob = await getBookCover(bookId);
-    if (coverBlob) {
-      return URL.createObjectURL(coverBlob);
+    try {
+      const coverBlob = await getBookCover(bookId);
+      if (coverBlob) {
+        return URL.createObjectURL(coverBlob);
+      }
+    } catch {
+      return null;
     }
   }
 
   async function fetchPdfForBook(bookId: number) {
-    const pdfBlob = await getBookPdf(bookId);
-    if (pdfBlob) {
-      return URL.createObjectURL(pdfBlob);
+    try {
+      const pdfBlob = await getBookPdf(bookId);
+      if (pdfBlob) {
+        return URL.createObjectURL(pdfBlob);
+      }
+    } catch {
+      return null;
     }
-    return null;
   }
 
   const closeModal = () => {
@@ -241,8 +248,11 @@ export function BooksView({ filter = Status.READ }: BookViewProp) {
                         className="w-full rounded shadow"
                       />
                     ) : (
-                      <></>
+                      <div className="w-full aspect-[2/3] flex items-center justify-center rounded bg-(--color-surface) text-center text-sm text-(--color-text-secondary)">
+                        Cover no encontrado
+                      </div>
                     )}
+
                     <div className="mb-3 text-sm text-gray-600">
                       Estado: {selectedBook.status}
                     </div>

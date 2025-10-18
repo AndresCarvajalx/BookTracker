@@ -13,6 +13,7 @@ import { Status, View } from "../types";
 import { AddBookView } from "./AddBookView";
 import { BooksView } from "./BooksView";
 import SideBar from "./components/SideBar";
+import { Profile } from "./Profile";
 
 const menu: { label: string; key: View; icon: React.ReactNode }[] = [
   { label: "Libros", key: View.Libros, icon: <FaBook /> },
@@ -39,7 +40,7 @@ export function Home() {
       case View.Agregar:
         return <AddBookView view={setActiveView} />;
       case View.Perfil:
-        return <>Perfil</>;
+        return <Profile />;
       default:
         return <div>Selecciona una opción</div>;
     }
