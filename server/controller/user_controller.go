@@ -24,6 +24,8 @@ func GetUser(c *gin.Context) {
 		return
 	}
 
+	user.Password = ""
+
 	c.JSON(http.StatusAccepted, user)
 }
 
@@ -42,9 +44,21 @@ func UpdateUser(c *gin.Context) {
 		return
 	}
 
-	if err := c.ShouldBindJSON(&userData); err != nil {
+	var input struct {
+		Username string `json:"username"`
+		Email    string `json:"email"`
+	}
+
+	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON provided"})
 		return
+	}
+
+	if input.Username != "" {
+		userData.Username = input.Username
+	}
+	if input.Email != "" {
+		userData.Email = input.Email
 	}
 
 	updatedUser, err := repositories.UpdateUser(id, &userData)
@@ -53,6 +67,8 @@ func UpdateUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Error updating user"})
 		return
 	}
+
+	updatedUser.Password = ""
 
 	c.JSON(http.StatusAccepted, updatedUser)
 }
