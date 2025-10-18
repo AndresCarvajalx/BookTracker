@@ -13,6 +13,12 @@ func FindUserByID(id string) (models.User, error) {
 
 func UpdateUser(id string, userData *models.User) (models.User, error) {
 	var user models.User
+
 	result := config.DB.Model(&user).Where("id = ?", id).Updates(userData)
-	return user, result.Error
+	if result.Error != nil {
+		return user, result.Error
+	}
+
+	fetch := config.DB.Where("id = ?", id).First(&user)
+	return user, fetch.Error
 }
