@@ -1,0 +1,8 @@
+[mysqld]
+server-id=1
+log-bin=mysql-bin
+binlog_format=ROW
+binlog_do_db=booktracker
+expire_logs_days=7
+max_binlog_size=100M
+default_authentication_plugin=mysql_native_password

@@ -1,0 +1,8 @@
+[mysqld]
+server-id=2
+relay-log=relay-bin
+relay-log-index=relay-bin.index
+log-bin=mysql-bin
+read_only=1
+binlog_format=ROW
+default_authentication_plugin=mysql_native_password

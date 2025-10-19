@@ -1,0 +1,62 @@
+services:
+  db-master:
+    image: mysql:8.0
+    container_name: db-master
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: booktracker
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_master_data:/var/lib/mysql
+      - ./db.sql:/docker-entrypoint-initdb.d/db.sql
+      - ./master.cnf:/etc/mysql/conf.d/master.cnf
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  db-slave:
+    image: mysql:8.0
+    container_name: db-slave
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    depends_on:
+      - db-master
+    ports:
+      - "3308:3306"
+    volumes:
+      - db_slave_data:/var/lib/mysql
+      - ./slave.cnf:/etc/mysql/conf.d/slave.cnf
+      - ./init-slave.sh:/docker-entrypoint-initdb.d/init-slave.sh
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+
+  go-server:
+    build: .
+    depends_on:
+      db-master:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    networks:
+      - backend
+
+volumes:
+  db_master_data:
+  db_slave_data:
+
+
+networks:
+  backend:
