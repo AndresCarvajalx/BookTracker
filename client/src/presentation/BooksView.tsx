@@ -39,9 +39,26 @@ export function BooksView({ filter = Status.READ }: BookViewProp) {
   }
 
   function handleSaved(updated: BookDetail) {
-    // TODO
-    books.map((b) => (b.id === updated.id ? { ...b, ...updated } : b));
-    setBooks(books);
+    const normalized: Partial<Book> = {
+      id: updated.id,
+      title: updated.title,
+      author: updated.author ?? "",
+      rating: updated.rating ?? undefined,
+      coverPath: updated.cover_path ?? undefined,
+      pdfPath: updated.pdf_path ?? undefined,
+      totalPages: updated.total_pages ?? undefined,
+      premise: updated.premise ?? undefined,
+      review: updated.review ?? undefined,
+      status: (updated.status as Status) ?? Status.TO_READ,
+      createdAt: updated.created_at ?? "",
+    };
+
+    const updatedBooks = books.map((b) =>
+      b.id === updated.id ? { ...b, ...normalized } : b
+    );
+
+    setBooks(updatedBooks);
+    setSelectedBook((prev) => (prev ? { ...prev, ...normalized } : prev));
     setEditOpen(false);
     setEditingBook(null);
   }

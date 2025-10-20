@@ -7,7 +7,6 @@ import {
 } from "../../api/books";
 import { Status, type Book, type BookDetail } from "../../types";
 
-// TODO FIX ERRORS
 interface Props {
   book: BookDetail;
   open: boolean;
