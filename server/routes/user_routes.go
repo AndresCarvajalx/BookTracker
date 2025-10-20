@@ -11,6 +11,6 @@ func UserRoutes(r *gin.Engine) {
 	routes.Use(middleware.AuthMiddleware())
 	{
 		routes.GET("/", controller.GetUser)
-		routes.PUT("/update", controller.UpdateUser)
+		routes.PUT("/", controller.UpdateUser)
 	}
 }
