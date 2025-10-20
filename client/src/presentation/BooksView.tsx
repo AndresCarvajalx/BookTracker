@@ -1,4 +1,3 @@
-// src/pages/BooksView.tsx
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   deleteBook,
